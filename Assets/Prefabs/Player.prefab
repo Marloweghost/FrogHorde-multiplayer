@@ -95,6 +95,7 @@ GameObject:
   - component: {fileID: 7606965298546186323}
   - component: {fileID: 7606965298546186322}
   - component: {fileID: 717291128871854924}
+  - component: {fileID: 3134772459957943092}
   - component: {fileID: 7606965298546186324}
   - component: {fileID: 7643890437764253634}
   m_Layer: 0
@@ -148,7 +149,7 @@ Rigidbody:
   m_IsKinematic: 0
   m_Interpolate: 1
   m_Constraints: 112
-  m_CollisionDetection: 0
+  m_CollisionDetection: 2
 --- !u!114 &717291128871854924
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -166,10 +167,66 @@ MonoBehaviour:
   minJumpForce: 10
   maxJumpForce: 50
   jumpChargeSpeed: 10
+  sidewaysJumpForce: 4
   _groundDetectionMask:
     serializedVersion: 2
-    m_Bits: 8
+    m_Bits: 72
+  _groundCheckSphereRadius: 0.5
   _cameraPrefab: {fileID: 8912061161204753363, guid: bcc4ee4423ac20744845d13430bb64e2, type: 3}
+  ClapCalledEvent:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 3134772459957943092}
+        m_TargetAssemblyTypeName: PlayerClap, Assembly-CSharp
+        m_MethodName: TryClap
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  DashCalledEvent:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 3134772459957943092}
+        m_TargetAssemblyTypeName: PlayerClap, Assembly-CSharp
+        m_MethodName: Dash
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!114 &3134772459957943092
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7606965298546186321}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3f4a257a356762240b7151c2deb0d7e7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _layersToAffect:
+    serializedVersion: 2
+    m_Bits: 64
+  _clapRadius: 10
+  _dashForce: 20
+  heightForceMultiplier: 0.1
+  _clapCooldown: 1
+  currentClapMode: 1
+  _ExplosionParameters:
+    clapForce: 500
+  _TossUpParameters:
+    clapForce: 10
 --- !u!114 &7606965298546186324
 MonoBehaviour:
   m_ObjectHideFlags: 0

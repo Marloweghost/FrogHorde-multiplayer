@@ -1,12 +1,15 @@
 using UnityEngine;
+using UnityEngine.Events;
 using Mirror;
 
+[RequireComponent(typeof(PlayerClap))]
 public class PlayerMovement : NetworkBehaviour
 {
     [Header("Jump settings")]
     public float minJumpForce = 15f;
     public float maxJumpForce = 50f;
     public float jumpChargeSpeed = 10f;
+    public float sidewaysJumpForce = 5f;
 
     private float _currentJumpForce;
 
@@ -21,6 +24,11 @@ public class PlayerMovement : NetworkBehaviour
 
     private Camera _cameraInstance;
     private Rigidbody _rigidbody;
+
+    [Header("Called Events")]
+    public UnityEvent ClapCalledEvent;
+    public UnityEvent<Rigidbody> DashCalledEvent;
+    private bool _isDashing = false;
 
     // В методе Awake() свойство isLocalPlayer неактуально
     private void Start()
@@ -37,8 +45,23 @@ public class PlayerMovement : NetworkBehaviour
 
         if (CanJump())
         {
-            HandleJumpInput();
+            HandleJumpForwardInput();
+            HandleJumpSidewaysInput();
+            HandleOnGroundClapInput();
         }
+        else
+        {
+            HandleMidAirClapInput();
+        }
+
+        if (_isDashing == true)
+        {
+            if (IsLandedAfterDash())
+            {
+                ClapCalledEvent.Invoke();
+            }
+        }
+
         AlignRotationWithCamera();
     }
 
@@ -55,7 +78,7 @@ public class PlayerMovement : NetworkBehaviour
 
         return isHit;
     }
-    private void HandleJumpInput()
+    private void HandleJumpForwardInput()
     {
         if (Input.GetButton("Jump"))
         {
@@ -79,12 +102,50 @@ public class PlayerMovement : NetworkBehaviour
             }
         }
     }
+    private void HandleJumpSidewaysInput()
+    {
+        if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyUp(KeyCode.A))
+        {
+            _rigidbody.AddForce((-transform.right + Vector3.up).normalized * sidewaysJumpForce, ForceMode.Impulse);
+        }
+        else if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyUp(KeyCode.D))
+        {
+            _rigidbody.AddForce((transform.right + Vector3.up).normalized * sidewaysJumpForce, ForceMode.Impulse);
+        }
+    }
     private void AlignRotationWithCamera()
     {
         transform.rotation = _cameraInstance.transform.rotation;
     }
 
-    
+    private void HandleOnGroundClapInput()
+    {
+        if (Input.GetMouseButtonDown(0))
+        {
+            ClapCalledEvent.Invoke();
+        }
+    }
+    private void HandleMidAirClapInput()
+    {
+        if (Input.GetMouseButtonDown(0))
+        {
+            DashCalledEvent.Invoke(_rigidbody);
+            _isDashing = true;
+        }
+    }
+    private bool IsLandedAfterDash()
+    {
+        if (CanJump() == true)
+        {
+            _isDashing = false;
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
     private void OnDrawGizmos()
     {
         if (CanJump())
